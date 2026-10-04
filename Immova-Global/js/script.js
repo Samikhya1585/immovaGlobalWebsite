@@ -1,4 +1,10 @@
 (() => {
+
+  emailjs.init({
+    publicKey: "ILk6BbfRUtTVscP8z"
+  });
+
+
   "use strict";
 
   const header = document.getElementById("site-header");
@@ -133,7 +139,7 @@
 
   counters.forEach(counter => counterObserver.observe(counter));
 
-  // Formspree setup.
+  /*// Formspree setup.
   // Replace YOUR_FORMSPREE_ID in index.html with the endpoint ID from Formspree.
   const form = document.getElementById("contact-form");
   const formMessage = document.getElementById("form-message");
@@ -180,7 +186,58 @@
       submitButton.disabled = false;
       submitButton.innerHTML = originalText;
     }
-  });
+  });*/
+
+  // EmailJS contact form setup.
+const form = document.getElementById("contact-form");
+const formMessage = document.getElementById("form-message");
+
+form?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
+  const submitButton = form.querySelector(".form-submit");
+  const originalText = submitButton ? submitButton.innerHTML : "Submit";
+
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.innerHTML = "Sending…";
+  }
+
+  formMessage.className = "form-message";
+  formMessage.textContent = "";
+
+  try {
+    await emailjs.sendForm(
+      "service_27jlfvr",
+      "template_9kwsp1u",
+      form
+    );
+
+    form.reset();
+
+    formMessage.className = "form-message success";
+    formMessage.textContent =
+      "Thank you! Your enquiry has been submitted. Immova Global will get in touch with you.";
+
+  } catch (error) {
+    console.error("EmailJS error:", error);
+
+    formMessage.className = "form-message error";
+    formMessage.textContent =
+      "We couldn't submit the enquiry right now. Please try again or contact Immova Global directly.";
+
+  } finally {
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.innerHTML = originalText;
+    }
+  }
+});
 })();
 
 
